@@ -1,0 +1,35 @@
+name: Static security checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Validate HTML and committed secrets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path('index.html').read_text(encoding='utf-8')
+          assert '<html' in html.lower()
+          assert '<head' in html.lower() and '</head>' in html.lower()
+          assert '<body' in html.lower() and '</body>' in html.lower()
+          assert not re.search(r'<<<<<<< |>>>>>>> |^=======$', html, re.M)
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path.stat().st_size > 1_000_000:
+                  continue
+              if path.suffix.lower() not in {'.html','.js','.css','.json','.md','.txt','.yml','.yaml'}:
+                  continue
+              text = path.read_text(encoding='utf-8', errors='replace')
+              assert not re.search(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----', text), path
+              assert not re.search(r'github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{30,}', text), path
+          print('Static audit passed')
+          PY
