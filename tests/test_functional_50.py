@@ -125,7 +125,7 @@ class SolarFunctionalTests(unittest.TestCase):
     def test_39_no_external_imports(self):
         self.assertNotRegex(HTML,r"@import\b")
     def test_40_no_css_remote_urls(self):
-        self.assertNotRegex(HTML,r"url\s*\(\s*['\\"]?https?://")
+        self.assertNotRegex(HTML, r"""url\s*\(\s*['"]?https?://""")
     def test_41_no_css_expressions(self):
         self.assertNotRegex(HTML,r"expression\s*\(")
     def test_42_no_html_templates(self):
