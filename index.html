@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="referrer" content="no-referrer">
         <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'; connect-src 'none'; img-src 'none'">
+        <title>Sistema Solar — Terra e Lua em órbita</title>
         <style>
             body {
                 margin: 0;
@@ -14,6 +15,17 @@
                 justify-content: center;
                 background-color: black;
                 overflow: hidden;
+            }
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
             }
             .container {
                 font-size: 10px;
@@ -81,6 +93,7 @@
         </style>
     </head>
     <body>
+        <h1 class="sr-only">Modelo visual das órbitas do Sol, da Terra e da Lua</h1>
         <div class="container">
             <div class="sun"></div>
             <div class="earth">
