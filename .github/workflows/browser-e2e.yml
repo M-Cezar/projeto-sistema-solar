@@ -1,0 +1,28 @@
+name: Browser acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser runner
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test actual browser behavior and responsive layout
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node tests/browser-e2e.cjs
