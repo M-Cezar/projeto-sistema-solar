@@ -24,7 +24,9 @@ class Document(HTMLParser):
 
 def rule(selector):
     pattern = r"(?<![\w-])" + re.escape(selector) + r"\s*\{([^{}]*)\}"
-    matches = re.findall(pattern, HTML, flags=re.I | re.S)
+    # Ignore @media blocks: reduced-motion overrides must not replace default orbit rules.
+    css = re.sub(r"@media\s*\([^)]*\)\s*\{\s*[^{}]*\{[^{}]*\}\s*\}", "", HTML, flags=re.I | re.S)
+    matches = re.findall(pattern, css, flags=re.I | re.S)
     return "\n".join(matches)
 
 def property_value(css, name):
