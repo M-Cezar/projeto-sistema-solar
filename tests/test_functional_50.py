@@ -23,12 +23,12 @@ class Document(HTMLParser):
             self.open.pop()
 
 def rule(selector):
-    pattern = r"(?<![\\w-])" + re.escape(selector) + r"\\s*\\{([^{}]*)\\}"
+    pattern = r"(?<![\w-])" + re.escape(selector) + r"\s*\{([^{}]*)\}"
     matches = re.findall(pattern, HTML, flags=re.I | re.S)
     return "\n".join(matches)
 
 def property_value(css, name):
-    matches = re.findall(r"(?:^|;)\\s*" + re.escape(name) + r"\\s*:\\s*([^;]+)", css, flags=re.I)
+    matches = re.findall(r"(?:^|;)\s*" + re.escape(name) + r"\s*:\s*([^;]+)", css, flags=re.I)
     return matches[-1].strip() if matches else None
 
 class SolarFunctionalTests(unittest.TestCase):
@@ -69,11 +69,11 @@ class SolarFunctionalTests(unittest.TestCase):
     def test_13_moon_orbit_period(self):
         self.assertIn("2.7s",property_value(rule(".moon"),"animation") or "")
     def test_14_animation_keyframes_defined(self):
-        self.assertRegex(HTML,r"@keyframes\\s+orbit\\s*\\{")
+        self.assertRegex(HTML,r"@keyframes\s+orbit\s*\{")
     def test_15_animation_rotates_full_circle(self):
-        self.assertRegex(HTML,r"rotate\\s*\\(\\s*360deg\\s*\\)")
+        self.assertRegex(HTML,r"rotate\s*\(\s*360deg\s*\)")
     def test_16_reduced_motion_disables_both_orbits(self):
-        self.assertRegex(HTML,r"@media\\s*\\(prefers-reduced-motion:\\s*reduce\\)\\s*\\{\\s*\\.earth,\\s*\\.moon\\s*\\{\\s*animation:\\s*none;")
+        self.assertRegex(HTML,r"@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{\s*\.earth,\s*\.moon\s*\{\s*animation:\s*none;")
     def test_17_sun_is_round(self):
         self.assertEqual(property_value(rule(".sun"),"border-radius"),"50%")
     def test_18_sun_is_visible(self):
@@ -123,11 +123,11 @@ class SolarFunctionalTests(unittest.TestCase):
     def test_38_no_duplicate_charset(self):
         d=Document();d.feed(HTML);self.assertEqual(sum(t=="meta" and "charset" in a for t,a in d.elements),1)
     def test_39_no_external_imports(self):
-        self.assertNotRegex(HTML,r"@import\\b")
+        self.assertNotRegex(HTML,r"@import\b")
     def test_40_no_css_remote_urls(self):
-        self.assertNotRegex(HTML,r"url\\s*\\(\\s*['\\\"]?https?://")
+        self.assertNotRegex(HTML,r"url\s*\(\s*['\\"]?https?://")
     def test_41_no_css_expressions(self):
-        self.assertNotRegex(HTML,r"expression\\s*\\(")
+        self.assertNotRegex(HTML,r"expression\s*\(")
     def test_42_no_html_templates(self):
         d=Document();d.feed(HTML);self.assertFalse([t for t,_ in d.elements if t=="template"])
     def test_43_no_untrusted_frames(self):
@@ -141,13 +141,13 @@ class SolarFunctionalTests(unittest.TestCase):
     def test_47_sun_has_no_animation(self):
         self.assertIsNone(property_value(rule(".sun"),"animation"))
     def test_48_moon_is_nested_in_earth(self):
-        self.assertRegex(HTML,r'<div class="earth">\\s*<div class="moon"></div>\\s*</div>')
+        self.assertRegex(HTML,r'<div class="earth">\s*<div class="moon"></div>\s*</div>')
     def test_49_sun_is_inside_container(self):
-        self.assertRegex(HTML,r'<div class="container">\\s*<div class="sun"></div>')
+        self.assertRegex(HTML,r'<div class="container">\s*<div class="sun"></div>')
     def test_50_css_orbit_duration_is_positive(self):
         for cls in (".earth",".moon"):
             value=property_value(rule(cls),"animation") or ""
-            duration=re.search(r"([0-9]+(?:\\.[0-9]+)?)s",value)
+            duration=re.search(r"([0-9]+(?:\.[0-9]+)?)s",value)
             self.assertIsNotNone(duration)
             self.assertGreater(float(duration.group(1)),0)
 
